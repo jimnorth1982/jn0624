@@ -18,10 +18,6 @@ public class BillableDaysCalendar {
         nonBillableDays = new ConcurrentSkipListSet<>();
     }
 
-    private BillableDaysCalendar(Set<LocalDate> nonBillableDays) {
-        this.nonBillableDays = nonBillableDays;
-    }
-
     public static LocalDate firstDayOfMonth(YearMonth yearMonth, DayOfWeek dayOfWeek) {
         return LocalDate.of(yearMonth.getYear(), yearMonth.getMonth(), 1)
                 .with(firstInMonth(dayOfWeek));
