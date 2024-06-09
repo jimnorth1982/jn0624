@@ -1,6 +1,5 @@
-package com.jnorth.toolstore;
+package com.jnorth.toolstore.calendar;
 
-import com.jnorth.toolstore.calendar.BillableDaysCalendar;
 import org.junit.Test;
 
 import java.time.DayOfWeek;
