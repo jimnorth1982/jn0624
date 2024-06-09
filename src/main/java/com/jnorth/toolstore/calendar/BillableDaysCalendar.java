@@ -14,9 +14,13 @@ import static java.time.temporal.TemporalAdjusters.lastInMonth;
 public class BillableDaysCalendar {
     private final Set<LocalDate> nonBillableDays;
     private final boolean billableWeekends;
+    private final boolean billableWeekDays;
+    private final boolean billableHolidays;
 
-    private BillableDaysCalendar(boolean billableWeekends) {
+    private BillableDaysCalendar(boolean billableWeekends, boolean billableWeekDays, boolean billableHolidays) {
         this.billableWeekends = billableWeekends;
+        this.billableWeekDays = billableWeekDays;
+        this.billableHolidays = billableHolidays;
         this.nonBillableDays = new ConcurrentSkipListSet<>();
     }
 
@@ -34,12 +38,12 @@ public class BillableDaysCalendar {
                 .with(lastInMonth(dayOfWeek));
     }
 
-    public static BillableDaysCalendarBuilder builder(boolean billableWeekends) {
-        return new BillableDaysCalendarBuilder(billableWeekends);
+    public static BillableDaysCalendarBuilder builder(boolean billableWeekends, boolean billableWeekDays, boolean billableHolidays) {
+        return new BillableDaysCalendarBuilder(billableWeekends, billableWeekDays, billableHolidays);
     }
 
     public static BillableDaysCalendarBuilder builder() {
-        return new BillableDaysCalendarBuilder(false);
+        return new BillableDaysCalendarBuilder(false, true, false);
     }
 
     private static boolean isWeekday(LocalDate inputDate) {
@@ -48,26 +52,38 @@ public class BillableDaysCalendar {
 
     public static class BillableDaysCalendarBuilder {
         private final BillableDaysCalendar cal;
+        private final Set<LocalDate> holidays = new ConcurrentSkipListSet<>();
 
-        public BillableDaysCalendarBuilder(boolean billableWeekends) {
-            this.cal = new BillableDaysCalendar(billableWeekends);
+        public BillableDaysCalendarBuilder(boolean billableWeekends, boolean billableWeekDays, boolean billableHolidays) {
+            this.cal = new BillableDaysCalendar(billableWeekends, billableWeekDays, billableHolidays);
         }
 
         public BillableDaysCalendarBuilder withHoliday(@NonNull LocalDate inputDate) {
-            if (this.cal.billableWeekends) {
-                this.cal.nonBillableDays.add(inputDate);
-            } else {
-                switch (inputDate.getDayOfWeek()) {
-                    case SATURDAY -> this.cal.nonBillableDays.add(inputDate.minusDays(1));
-                    case SUNDAY -> this.cal.nonBillableDays.add(inputDate.plusDays(1));
-                    case null -> throw new RuntimeException("LocalDate input for holiday must not be null.");
-                    default -> this.cal.nonBillableDays.add(inputDate);
-                }
-            }
+            holidays.add(inputDate);
             return this;
         }
 
         public BillableDaysCalendar build() {
+            for (LocalDate inputDate : this.holidays) {
+                switch (inputDate.getDayOfWeek()) {
+                    case SATURDAY -> {
+                        if (this.cal.billableWeekends) {
+                            this.cal.nonBillableDays.add(inputDate);
+                        } else {
+                            this.cal.nonBillableDays.add(inputDate.minusDays(1));
+                        }
+                    }
+                    case SUNDAY -> {
+                        if (this.cal.billableWeekends) {
+                            this.cal.nonBillableDays.add(inputDate);
+                        } else {
+                            this.cal.nonBillableDays.add(inputDate.plusDays(1));
+                        }
+                    }
+                    case null -> throw new RuntimeException("LocalDate input for holiday must not be null.");
+                    default -> this.cal.nonBillableDays.add(inputDate);
+                }
+            }
             return cal;
         }
     }
