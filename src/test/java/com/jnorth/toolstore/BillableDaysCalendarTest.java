@@ -15,27 +15,27 @@ public class BillableDaysCalendarTest {
 
     @Test
     public void createNewBillableDaysCalendar_hasJulyFourth() {
-        LocalDate independenceDay = BillableDaysCalendar.exactDate(LocalDate.of(2024, 7, 4));
+        LocalDate independenceDay = LocalDate.of(2024, 7, 4);
 
         BillableDaysCalendar calendar = BillableDaysCalendar.builder()
-                .holiday(independenceDay)
+                .withHoliday(independenceDay)
                 .build();
 
-        assertFalse(calendar.isBillableDay(LocalDate.of(2024, 7, 4)));
-        assertTrue(calendar.isBillableDay(LocalDate.of(2024, 7, 5)));
+        assertFalse(calendar.isBillableDay(independenceDay));
+        assertTrue(calendar.isBillableDay(independenceDay.plusDays(1)));
     }
 
     @Test
-    public void createNewBillableDaysCalendar_hasJulyFourthOfJulyOnSaturday() { //friday should be invoiceable
-        LocalDate independenceDay = BillableDaysCalendar.exactDate(LocalDate.of(2026, 7, 4));
+    public void createNewBillableDaysCalendar_hasJulyFourthOfJulyOnSaturday() {
+        LocalDate independenceDay = LocalDate.of(2026, 7, 4);
 
         BillableDaysCalendar calendar = BillableDaysCalendar.builder()
-                .holiday(independenceDay)
+                .withHoliday(independenceDay)
                 .build();
 
-        assertFalse(calendar.isBillableDay(LocalDate.of(2026, 7, 4)));
-        assertFalse(calendar.isBillableDay(LocalDate.of(2026, 7, 3)));
-        assertTrue(calendar.isBillableDay(LocalDate.of(2026, 7, 6)));
+        assertFalse(calendar.isBillableDay(independenceDay));
+        assertFalse(calendar.isBillableDay(independenceDay.minusDays(1)));
+        assertTrue(calendar.isBillableDay(independenceDay.plusDays(2)));
     }
 
     @Test
@@ -43,23 +43,25 @@ public class BillableDaysCalendarTest {
         LocalDate laborDay = BillableDaysCalendar.firstDayOfMonth(YearMonth.of(2024, Month.SEPTEMBER), DayOfWeek.MONDAY);
 
         BillableDaysCalendar calendar = BillableDaysCalendar.builder()
-                .holiday(laborDay)
+                .withHoliday(laborDay)
                 .build();
 
-        assertFalse(calendar.isBillableDay(LocalDate.of(2024, 9, 2)));
-        assertTrue(calendar.isBillableDay(LocalDate.of(2024, 9, 9)));
+        LocalDate actualLaborDate = LocalDate.of(2024, 9, 2);
+
+        assertFalse(calendar.isBillableDay(actualLaborDate));
+        assertTrue(calendar.isBillableDay(actualLaborDate.plusDays(7)));
     }
 
     @Test
-    public void createNewBillableDaysCalendar_hasCorrectCincoDeMayo() {
-        LocalDate cincoDeMayo = BillableDaysCalendar.exactDate(LocalDate.of(2024, 5, 5));
+    public void createNewBillableDaysCalendar_hasCincoDeMayoObservedOnMonday() {
+        LocalDate cincoDeMayo = LocalDate.of(2024, 5, 5);
 
         BillableDaysCalendar calendar = BillableDaysCalendar.builder()
-                .holiday(cincoDeMayo)
+                .withHoliday(cincoDeMayo)
                 .build();
 
-        assertFalse(calendar.isBillableDay(LocalDate.of(2024, 5, 5)));
-        assertFalse(calendar.isBillableDay(LocalDate.of(2024, 5, 6)));
+        assertFalse(calendar.isBillableDay(cincoDeMayo));
+        assertFalse(calendar.isBillableDay(cincoDeMayo.plusDays(1)));
     }
 
     @Test
@@ -67,38 +69,60 @@ public class BillableDaysCalendarTest {
         LocalDate thanksgivingDay = BillableDaysCalendar.lastDayOfMonth(YearMonth.of(2024, Month.NOVEMBER), DayOfWeek.THURSDAY);
 
         BillableDaysCalendar calendar = BillableDaysCalendar.builder()
-                .holiday(thanksgivingDay)
+                .withHoliday(thanksgivingDay)
                 .build();
 
-        assertFalse(calendar.isBillableDay(LocalDate.of(2024, 11, 28)));
-        assertTrue(calendar.isBillableDay(LocalDate.of(2024, 11, 21)));
+        LocalDate actualThanksgivingDay = LocalDate.of(2024, 11, 28);
+
+        assertFalse(calendar.isBillableDay(actualThanksgivingDay));
+        assertTrue(calendar.isBillableDay(actualThanksgivingDay.minusDays(7)));
+    }
+
+    @Test
+    public void createNewBillableDaysCalendarWithBillableWeekends_hasJulyFourthOfJulyOnSaturday() {
+        LocalDate independenceDayOnSaturday = LocalDate.of(2026, 7, 4);
+
+        BillableDaysCalendar calendar = BillableDaysCalendar.builder(true)
+                .withHoliday(independenceDayOnSaturday)
+                .build();
+
+        assertFalse(calendar.isBillableDay(independenceDayOnSaturday));
+        assertTrue(calendar.isBillableDay(independenceDayOnSaturday.minusDays(1)));
+        assertTrue(calendar.isBillableDay(independenceDayOnSaturday.plusDays(2)));
     }
 
     @Test
     public void createNewBillableDaysCalendar_hasMultipleHolidays() {
+        LocalDate independenceDay2024 = LocalDate.of(2024, 7, 4);
+        LocalDate independenceDay2026 = LocalDate.of(2026, 7, 4);
         LocalDate thanksgivingDay = BillableDaysCalendar.lastDayOfMonth(YearMonth.of(2024, Month.NOVEMBER), DayOfWeek.THURSDAY);
-        LocalDate cincoDeMayo = BillableDaysCalendar.exactDate(LocalDate.of(2024, 5, 5));
         LocalDate laborDay = BillableDaysCalendar.firstDayOfMonth(YearMonth.of(2024, Month.SEPTEMBER), DayOfWeek.MONDAY);
-        LocalDate independenceDay = BillableDaysCalendar.exactDate(LocalDate.of(2026, 7, 4));
+        LocalDate cincoDeMayo = LocalDate.of(2024, 5, 5);
 
         BillableDaysCalendar calendar = BillableDaysCalendar.builder()
-                .holiday(thanksgivingDay)
-                .holiday(cincoDeMayo)
-                .holiday(laborDay)
-                .holiday(independenceDay)
+                .withHoliday(independenceDay2024)
+                .withHoliday(independenceDay2026)
+                .withHoliday(thanksgivingDay)
+                .withHoliday(cincoDeMayo)
+                .withHoliday(laborDay)
                 .build();
 
-        assertFalse(calendar.isBillableDay(LocalDate.of(2026, 7, 4)));
-        assertFalse(calendar.isBillableDay(LocalDate.of(2026, 7, 3)));
-        assertTrue(calendar.isBillableDay(LocalDate.of(2026, 7, 6)));
+        assertFalse(calendar.isBillableDay(independenceDay2024));
+        assertTrue(calendar.isBillableDay(independenceDay2024.plusDays(1)));
 
-        assertFalse(calendar.isBillableDay(LocalDate.of(2024, 9, 2)));
-        assertTrue(calendar.isBillableDay(LocalDate.of(2024, 9, 9)));
+        assertFalse(calendar.isBillableDay(independenceDay2026));
+        assertFalse(calendar.isBillableDay(independenceDay2026.minusDays(1)));
+        assertTrue(calendar.isBillableDay(independenceDay2026.plusDays(2)));
 
-        assertFalse(calendar.isBillableDay(LocalDate.of(2024, 5, 5)));
-        assertFalse(calendar.isBillableDay(LocalDate.of(2024, 5, 6)));
+        assertFalse(calendar.isBillableDay(cincoDeMayo));
+        assertFalse(calendar.isBillableDay(cincoDeMayo.plusDays(1)));
 
-        assertFalse(calendar.isBillableDay(LocalDate.of(2024, 11, 28)));
-        assertTrue(calendar.isBillableDay(LocalDate.of(2024, 11, 21)));
+        LocalDate actualThanksgivingDay = LocalDate.of(2024, 11, 28);
+        assertFalse(calendar.isBillableDay(actualThanksgivingDay));
+        assertTrue(calendar.isBillableDay(actualThanksgivingDay.minusDays(7)));
+
+        LocalDate actualLaborDate = LocalDate.of(2024, 9, 2);
+        assertFalse(calendar.isBillableDay(actualLaborDate));
+        assertTrue(calendar.isBillableDay(actualLaborDate.plusDays(7)));
     }
 }
