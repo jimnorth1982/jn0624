@@ -43,7 +43,7 @@ public class RentalAgreementTest extends TestCase {
 
 
 
-    public void testLADWInvoiceReport_July4_fiveDays() throws ValidationError {
+    public void testLADWInvoiceReport_July4_threeDays() throws ValidationError {
         RentalAgreement rep = RentalAgreement.newInstance(
                 ToolsCatalog.get(new ToolCode("LADW")),
                 new DateRange(LocalDate.of(2020, 7, 2), 3),
