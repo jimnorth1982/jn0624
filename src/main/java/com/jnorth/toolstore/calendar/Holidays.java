@@ -1,7 +1,5 @@
 package com.jnorth.toolstore.calendar;
 
-import com.jnorth.toolstore.Utils;
-
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Month;
@@ -10,6 +8,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.SequencedCollection;
 import java.util.stream.Stream;
+
+import static com.jnorth.toolstore.Utils.firstDayOfMonth;
 
 public class Holidays {
     public static SequencedCollection<LocalDate> defaultHolidays() {
@@ -26,6 +26,6 @@ public class Holidays {
     }
 
     private static LocalDate laborDay(Integer year) {
-        return Utils.firstDayOfMonth(YearMonth.of(year, Month.SEPTEMBER), DayOfWeek.MONDAY);
+        return firstDayOfMonth(YearMonth.of(year, Month.SEPTEMBER), DayOfWeek.MONDAY);
     }
 }

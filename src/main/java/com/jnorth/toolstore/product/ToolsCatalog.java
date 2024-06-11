@@ -6,10 +6,10 @@ import com.jnorth.toolstore.invoice.strategy.ChargeWeekends;
 import com.jnorth.toolstore.invoice.strategy.NoChargeHolidays;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Map;
 
 import static com.jnorth.toolstore.calendar.Holidays.defaultHolidays;
+import static java.util.List.of;
 
 public abstract class ToolsCatalog {
 
@@ -24,27 +24,23 @@ public abstract class ToolsCatalog {
         return catalog.get(toolCode);
     }
 
-    public static Tool stihlChainsaw() {
-        return new Tool(
-                new ToolCode("CHNS"),
-                chainsaw(),
-                new Brand("Stihl")
-        );
-    }
-
     private static ToolType chainsaw() {
         return new ToolType("Chainsaw", new BigDecimal("1.49"),
-                new ChargeSchedule(List.of(new ChargeWeekdays()), defaultHolidays()));
+                new ChargeSchedule(of(new ChargeWeekdays()), defaultHolidays()));
     }
 
     private static ToolType ladder() {
         return new ToolType("Ladder", new BigDecimal("1.99"),
-                new ChargeSchedule(List.of(new ChargeWeekdays(), new ChargeWeekends(), new NoChargeHolidays()), defaultHolidays()));
+                new ChargeSchedule(of(new ChargeWeekdays(), new ChargeWeekends(), new NoChargeHolidays()), defaultHolidays()));
     }
 
     private static ToolType jackhammer() {
         return new ToolType("Jackhammer", new BigDecimal("2.99"),
-                new ChargeSchedule(List.of(new ChargeWeekdays(), new NoChargeHolidays()), defaultHolidays()));
+                new ChargeSchedule(of(new ChargeWeekdays(), new NoChargeHolidays()), defaultHolidays()));
+    }
+
+    public static Tool stihlChainsaw() {
+        return new Tool(new ToolCode("CHNS"), chainsaw(), new Brand("Stihl"));
     }
 
     public static Tool wernerLadder() {
@@ -52,13 +48,10 @@ public abstract class ToolsCatalog {
     }
 
     public static Tool deWaltJackhammer() {
-        return new Tool(
-                new ToolCode("JAKD"), jackhammer(), new Brand("DeWalt"));
+        return new Tool(new ToolCode("JAKD"), jackhammer(), new Brand("DeWalt"));
     }
 
     public static Tool ridgidJackhammer() {
         return new Tool(new ToolCode("JAKR"), jackhammer(), new Brand("Ridgid"));
     }
-
-
 }

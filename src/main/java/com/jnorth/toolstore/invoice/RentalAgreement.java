@@ -16,24 +16,34 @@ import java.util.List;
 @Builder
 public class RentalAgreement {
     private final Tool tool;
-    private final DateRange invoiceRange;
+    private final DateRange rentalDateRange;
     private final BigDecimal discount;
 
     public int chargeDays() {
         Tool tmpTool = new Tool(tool.toolCode(), new ToolType(toolTypeName(), BigDecimal.ONE, tool.toolType().chargeSchedule()), tool.brand());
-        return newInstance(tmpTool, invoiceRange, discount).total().intValue();
+        return newInstance(tmpTool, rentalDateRange, discount).total().intValue();
     }
 
     public BigDecimal total() {
-        return invoiceRange.stream().map((date) -> tool.toolType().chargeSchedule().chargeStrategies().stream().map(invoiceStrategy -> invoiceStrategy.apply(tool.toolType(), date)).reduce(BigDecimal.ZERO, BigDecimal::add)).reduce(BigDecimal.ZERO, BigDecimal::add);
+        return rentalDateRange.stream()
+                .map((date) -> tool.toolType().chargeSchedule().chargeStrategies()
+                        .stream()
+                        .map(invoiceStrategy -> invoiceStrategy.apply(tool.toolType(), date))
+                        .reduce(BigDecimal.ZERO, BigDecimal::add)
+                )
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     public static RentalAgreement newInstance(Tool tool, DateRange dateRange, BigDecimal discount) {
-        return RentalAgreement.builder().tool(tool).invoiceRange(dateRange).discount(discount).build();
+        return RentalAgreement.builder()
+                .tool(tool)
+                .rentalDateRange(dateRange)
+                .discount(discount)
+                .build();
     }
 
     public long totalDays() {
-        return invoiceRange.totalDays();
+        return rentalDateRange.totalDays();
     }
 
     public BigDecimal totalWithDiscount() {
@@ -97,11 +107,11 @@ public class RentalAgreement {
     }
 
     public LocalDate dueDate() {
-        return invoiceRange.getDueDate();
+        return rentalDateRange.getDueDate();
     }
 
     public LocalDate checkOutDate() {
-        return invoiceRange.getCheckOutDate();
+        return rentalDateRange.getCheckOutDate();
     }
 
     public String brandName() {

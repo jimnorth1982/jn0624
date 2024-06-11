@@ -5,12 +5,14 @@ import lombok.NonNull;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.NumberFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.Locale;
 
+import static java.text.NumberFormat.getCurrencyInstance;
+import static java.text.NumberFormat.getPercentInstance;
+import static java.time.LocalDate.of;
 import static java.time.temporal.TemporalAdjusters.firstInMonth;
 import static java.time.temporal.TemporalAdjusters.lastInMonth;
 
@@ -28,21 +30,18 @@ public class Utils {
     }
 
     public static LocalDate firstDayOfMonth(YearMonth yearMonth, DayOfWeek dayOfWeek) {
-        return LocalDate.of(yearMonth.getYear(), yearMonth.getMonth(), 1)
-                .with(firstInMonth(dayOfWeek));
+        return of(yearMonth.getYear(), yearMonth.getMonth(), 1).with(firstInMonth(dayOfWeek));
     }
 
     public static LocalDate lastDayOfMonth(YearMonth yearMonth, DayOfWeek dayOfWeek) {
-        return LocalDate.of(yearMonth.getYear(), yearMonth.getMonth(), 1)
-                .with(lastInMonth(dayOfWeek));
+        return of(yearMonth.getYear(), yearMonth.getMonth(), 1).with(lastInMonth(dayOfWeek));
     }
 
     public static String formatDollarAmount(BigDecimal dollarAmount) {
-        return NumberFormat.getCurrencyInstance(Locale.US)
-                .format(dollarAmount.setScale(2, RoundingMode.HALF_UP));
+        return getCurrencyInstance(Locale.US).format(dollarAmount.setScale(2, RoundingMode.HALF_UP));
     }
 
     public static String formatPercentage(BigDecimal percentage) {
-        return NumberFormat.getPercentInstance(Locale.US).format(percentage);
+        return getPercentInstance(Locale.US).format(percentage);
     }
 }
