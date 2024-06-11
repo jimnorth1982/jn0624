@@ -34,20 +34,17 @@ public abstract class ToolsCatalog {
 
     private static ToolType chainsaw() {
         return new ToolType("Chainsaw", new BigDecimal("1.49"),
-                new ChargeSchedule(List.of(new ChargeWeekdays()),
-                        defaultHolidays()));
+                new ChargeSchedule(List.of(new ChargeWeekdays()), defaultHolidays()));
     }
 
     private static ToolType ladder() {
         return new ToolType("Ladder", new BigDecimal("1.99"),
-                new ChargeSchedule(List.of(new ChargeWeekdays(), new ChargeWeekends(), new NoChargeHolidays()),
-                        defaultHolidays()));
+                new ChargeSchedule(List.of(new ChargeWeekdays(), new ChargeWeekends(), new NoChargeHolidays()), defaultHolidays()));
     }
 
     private static ToolType jackhammer() {
         return new ToolType("Jackhammer", new BigDecimal("2.99"),
-                new ChargeSchedule(List.of(new ChargeWeekdays(), new NoChargeHolidays()),
-                        defaultHolidays()));
+                new ChargeSchedule(List.of(new ChargeWeekdays(), new NoChargeHolidays()), defaultHolidays()));
     }
 
     public static Tool wernerLadder() {
