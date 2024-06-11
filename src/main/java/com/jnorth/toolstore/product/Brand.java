@@ -1,4 +1,4 @@
-package com.jnorth.toolstore.tools;
+package com.jnorth.toolstore.product;
 
 public record Brand(String name) {
 }
