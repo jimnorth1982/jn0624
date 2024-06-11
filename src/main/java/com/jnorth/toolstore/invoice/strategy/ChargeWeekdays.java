@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import static com.jnorth.toolstore.Utils.isWeekday;
+import static java.math.BigDecimal.ZERO;
 
 public class ChargeWeekdays implements ChargeStrategy {
     @Override
@@ -14,6 +15,6 @@ public class ChargeWeekdays implements ChargeStrategy {
         if (isWeekday(localDate)) {
             return toolType.dailyRentalCharge();
         }
-        return BigDecimal.ZERO;
+        return ZERO;
     }
 }
