@@ -8,6 +8,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.Year;
+import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.SequencedCollection;
 
@@ -44,5 +45,9 @@ public class Utils {
 
     public static String formatPercentage(BigDecimal percentage) {
         return getPercentInstance(Locale.US).format(percentage);
+    }
+
+    public static String formatDate(LocalDate localDate) {
+        return localDate.format(DateTimeFormatter.ofPattern("MM/dd/yy"));
     }
 }

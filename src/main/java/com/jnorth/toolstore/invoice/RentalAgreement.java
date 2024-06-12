@@ -9,7 +9,6 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.SequencedCollection;
@@ -68,7 +67,7 @@ public class RentalAgreement {
         return total(holidays).multiply(discount);
     }
 
-    public void validate() throws ValidationError {
+    public List<String> validate() {
         List<String> messages = new ArrayList<>();
         if (discount.doubleValue() > 1d) {
             messages.add(STR."The discount provided (\{formattedDiscountPercent()}) is greater than %100.");
@@ -78,9 +77,7 @@ public class RentalAgreement {
             messages.add(STR."The number of days provided (\{totalDays()}) is less than one day.");
         }
 
-        if (!messages.isEmpty()) {
-            throw new ValidationError(String.join("\n", messages));
-        }
+        return messages;
     }
 
     public String print() {
@@ -120,12 +117,12 @@ public class RentalAgreement {
         return Utils.formatDollarAmount(tool.toolType().dailyRentalCharge());
     }
 
-    public LocalDate dueDate() {
-        return rentalDateRange.getDueDate();
+    public String dueDate() {
+        return Utils.formatDate(rentalDateRange.getDueDate());
     }
 
-    public LocalDate checkOutDate() {
-        return rentalDateRange.getCheckOutDate();
+    public String checkOutDate() {
+        return Utils.formatDate(rentalDateRange.getCheckOutDate());
     }
 
     public String brandName() {
