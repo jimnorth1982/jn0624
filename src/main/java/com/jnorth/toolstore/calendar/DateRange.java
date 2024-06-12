@@ -5,8 +5,9 @@ import lombok.NonNull;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.Objects;
 import java.util.stream.Stream;
+
+import static java.util.Objects.requireNonNull;
 
 @Data
 public class DateRange {
@@ -14,12 +15,12 @@ public class DateRange {
     private final LocalDate dueDate;
 
     public DateRange(@NonNull LocalDate checkOutDate, @NonNull LocalDate dueDate) {
-        this.checkOutDate = Objects.requireNonNull(checkOutDate);
-        this.dueDate = Objects.requireNonNull(dueDate);
+        this.checkOutDate = requireNonNull(checkOutDate);
+        this.dueDate = requireNonNull(dueDate);
     }
 
     public DateRange(@NonNull LocalDate checkOutDate, int numberOfDays) {
-        this(Objects.requireNonNull(checkOutDate), checkOutDate.plusDays(numberOfDays - 1));
+        this(requireNonNull(checkOutDate), checkOutDate.plusDays(numberOfDays - 1));
     }
 
     public Stream<LocalDate> stream() {
