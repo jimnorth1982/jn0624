@@ -47,8 +47,6 @@ public class RentalAgreementTest extends TestCase {
         System.out.println(rentalAgreement.print());
     }
 
-
-
     public void testLADWInvoiceReport_July4_threeDays() throws ValidationError {
         RentalAgreement rep = RentalAgreement.newInstance(
                 ToolsCatalog.get(new ToolCode("LADW")),

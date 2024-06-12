@@ -4,7 +4,10 @@ import com.jnorth.toolstore.calendar.Holiday;
 import lombok.NonNull;
 
 import java.math.BigDecimal;
-import java.time.*;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.Month;
+import java.time.Year;
 import java.util.Locale;
 import java.util.SequencedCollection;
 
@@ -15,7 +18,6 @@ import static java.time.DayOfWeek.SATURDAY;
 import static java.time.DayOfWeek.SUNDAY;
 import static java.time.LocalDate.of;
 import static java.time.temporal.TemporalAdjusters.firstInMonth;
-import static java.time.temporal.TemporalAdjusters.lastInMonth;
 
 public class Utils {
     public static boolean isWeekday(@NonNull LocalDate localDate) {
@@ -34,10 +36,6 @@ public class Utils {
 
     public static LocalDate firstDayOfMonth(Month month, DayOfWeek dayOfWeek, Year year) {
         return of(year.getValue(), month, 1).with(firstInMonth(dayOfWeek));
-    }
-
-    public static LocalDate lastDayOfMonth(YearMonth yearMonth, DayOfWeek dayOfWeek) {
-        return of(yearMonth.getYear(), yearMonth.getMonth(), 1).with(lastInMonth(dayOfWeek));
     }
 
     public static String formatDollarAmount(BigDecimal dollarAmount) {
