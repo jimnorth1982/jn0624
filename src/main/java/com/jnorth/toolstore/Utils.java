@@ -1,13 +1,12 @@
 package com.jnorth.toolstore;
 
-import com.jnorth.toolstore.calendar.ChargeSchedule;
+import com.jnorth.toolstore.calendar.Holiday;
 import lombok.NonNull;
 
 import java.math.BigDecimal;
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.YearMonth;
+import java.time.*;
 import java.util.Locale;
+import java.util.SequencedCollection;
 
 import static java.math.RoundingMode.HALF_UP;
 import static java.text.NumberFormat.getCurrencyInstance;
@@ -27,12 +26,14 @@ public class Utils {
         return !isWeekday(localDate);
     }
 
-    public static boolean isHoliday(@NonNull LocalDate localDate, @NonNull ChargeSchedule chargeSchedule) {
-        return chargeSchedule.holidays().contains(localDate);
+    public static boolean isHoliday(@NonNull LocalDate localDate, @NonNull SequencedCollection<Holiday> holidays) {
+        return holidays.stream()
+                .map(holiday -> holiday.forYear(Year.of(localDate.getYear())))
+                .anyMatch(localDate::equals);
     }
 
-    public static LocalDate firstDayOfMonth(YearMonth yearMonth, DayOfWeek dayOfWeek) {
-        return of(yearMonth.getYear(), yearMonth.getMonth(), 1).with(firstInMonth(dayOfWeek));
+    public static LocalDate firstDayOfMonth(Month month, DayOfWeek dayOfWeek, Year year) {
+        return of(year.getValue(), month, 1).with(firstInMonth(dayOfWeek));
     }
 
     public static LocalDate lastDayOfMonth(YearMonth yearMonth, DayOfWeek dayOfWeek) {

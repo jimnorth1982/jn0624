@@ -1,21 +1,27 @@
 package com.jnorth.toolstore.product;
 
 import com.jnorth.toolstore.calendar.DateRange;
+import com.jnorth.toolstore.calendar.FirstDayOfMonth;
 import com.jnorth.toolstore.invoice.RentalAgreement;
 import com.jnorth.toolstore.invoice.ValidationError;
 import junit.framework.TestCase;
 import org.junit.Assert;
 
 import java.math.BigDecimal;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.Month;
+import java.util.List;
 
 public class RentalAgreementTest extends TestCase {
 
-    public void testJAKRInvoiceReport_laborDay_fiveDays() {
+    public void testJAKRInvoiceReport_laborDay_fiveDays_exception() {
+        DateRange rentalDateRange = new DateRange(LocalDate.of(2015, 9, 3), 5);
         RentalAgreement rentalAgreement = RentalAgreement.newInstance(
                 ToolsCatalog.get(new ToolCode("JAKR")),
-                new DateRange(LocalDate.of(2015, 9, 3), 5),
-                new BigDecimal("1.01")
+                rentalDateRange,
+                new BigDecimal("1.01"),
+                List.of(new FirstDayOfMonth(DayOfWeek.MONDAY, Month.SEPTEMBER))
         );
 
         System.out.println(rentalAgreement.print());

@@ -2,6 +2,7 @@ package com.jnorth.toolstore.invoice;
 
 import com.jnorth.toolstore.Utils;
 import com.jnorth.toolstore.calendar.DateRange;
+import com.jnorth.toolstore.calendar.Holiday;
 import com.jnorth.toolstore.product.Tool;
 import com.jnorth.toolstore.product.ToolType;
 import lombok.Builder;
@@ -11,6 +12,9 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.SequencedCollection;
+
+import static com.jnorth.toolstore.calendar.Holidays.defaultHolidays;
 
 @Data
 @Builder
@@ -18,27 +22,37 @@ public class RentalAgreement {
     private final Tool tool;
     private final DateRange rentalDateRange;
     private final BigDecimal discount;
+    private final SequencedCollection<Holiday> holidays;
 
     public int chargeDays() {
         Tool tmpTool = new Tool(tool.toolCode(), new ToolType(toolTypeName(), BigDecimal.ONE, tool.toolType().chargeSchedule()), tool.brand());
-        return newInstance(tmpTool, rentalDateRange, discount).total().intValue();
+        return newInstance(tmpTool, rentalDateRange, discount).defaultHolidayTotal().intValue();
     }
 
-    public BigDecimal total() {
+    public BigDecimal defaultHolidayTotal() {
+        return total(defaultHolidays());
+    }
+
+    public BigDecimal total(SequencedCollection<Holiday> holidays) {
         return rentalDateRange.stream()
                 .map((date) -> tool.toolType().chargeSchedule().chargeStrategies()
                         .stream()
-                        .map(invoiceStrategy -> invoiceStrategy.apply(tool.toolType(), date))
+                        .map(invoiceStrategy -> invoiceStrategy.apply(tool.toolType().dailyRentalCharge(), date, holidays))
                         .reduce(BigDecimal.ZERO, BigDecimal::add)
                 )
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     public static RentalAgreement newInstance(Tool tool, DateRange dateRange, BigDecimal discount) {
+        return newInstance(tool, dateRange, discount, defaultHolidays());
+    }
+
+    public static RentalAgreement newInstance(Tool tool, DateRange dateRange, BigDecimal discount, SequencedCollection<Holiday> holidays) {
         return RentalAgreement.builder()
                 .tool(tool)
                 .rentalDateRange(dateRange)
                 .discount(discount)
+                .holidays(holidays)
                 .build();
     }
 
@@ -47,11 +61,11 @@ public class RentalAgreement {
     }
 
     public BigDecimal totalWithDiscount() {
-        return total().multiply(BigDecimal.ONE.subtract(discount));
+        return total(holidays).multiply(BigDecimal.ONE.subtract(discount));
     }
 
     public BigDecimal discountAmount() {
-        return total().multiply(discount);
+        return total(holidays).multiply(discount);
     }
 
     public void validate() throws ValidationError {
@@ -87,7 +101,7 @@ public class RentalAgreement {
     }
 
     public String formattedTotal() {
-        return Utils.formatDollarAmount(total());
+        return Utils.formatDollarAmount(total(holidays));
     }
 
     public String formattedFinalCharge() {
